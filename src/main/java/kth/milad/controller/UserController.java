@@ -39,54 +39,62 @@ public class UserController {
 
 
     @PostMapping("/register")
-    public void RegisterUser(@RequestBody UserVm userVm){
+    public void RegisterUser(@RequestBody UserVm userVm) {
         User newUser = new User();
-        newUser.setUserId(generateUniqueUserId() ); // Implement your logic to generate unique IDs
+        newUser.setUserId(generateUniqueUserId()); // Implement your logic to generate unique IDs
 
 
-        switch (userVm.getUserType()){
+        switch (userVm.getUserType()) {
             case "DOCTOR": //doctorService.create(new Doctor(userVm.getId(), userVm.getName(), userVm.getEmail(), userVm.getPassword(), newUser));
                 Doctor doctor = new Doctor();
                 doctor.setUser(newUser);
-                doctor.setUserId(userVm.getId()); doctor.setName(userVm.getName()); doctor.setEmail(userVm.getEmail()); doctor.setPassword(userVm.getPassword());
+                doctor.setUserId(userVm.getId());
+                doctor.setName(userVm.getName());
+                doctor.setEmail(userVm.getEmail());
+                doctor.setPassword(userVm.getPassword());
                 userServiceImp.createDoctor(doctor);
-                System.out.println(userVm.getEmail());break;
-            case "OTHERS": userServiceImp.createOthers(new Others(userVm.getId(), userVm.getName(), userVm.getEmail(), userVm.getPassword(), newUser));break;
-            case "PATIENT": userServiceImp.createPatient(new Patient(userVm.getId(), userVm.getName(), userVm.getEmail(), userVm.getPassword(), newUser));break;
+                System.out.println(userVm.getEmail());
+                break;
+            case "OTHERS":
+                userServiceImp.createOthers(new Others(userVm.getId(), userVm.getName(), userVm.getEmail(), userVm.getPassword(), newUser));
+                break;
+            case "PATIENT":
+                userServiceImp.createPatient(new Patient(userVm.getId(), userVm.getName(), userVm.getEmail(), userVm.getPassword(), newUser));
+                break;
         }
         //todo return userVm
     }
 
-    private int generateUniqueUserId(){
+    private int generateUniqueUserId() {
         return uniqueId.incrementAndGet();
     }
 
     @PostMapping("/login")
-    public UserVm loggInUser(@RequestBody UserVm userVm){
+    public UserVm loggInUser(@RequestBody UserVm userVm) {
         List<UserVm> userVms = new ArrayList<>();
         List<Doctor> doctors = doctorService.getAll();
-        for (Doctor d:doctors) {
-            userVms.add(new UserVm(d.getUserId(),d.getName(),"DOCTOR",d.getEmail(),d.getPassword(), d.getUser().getUserId()));
+        for (Doctor d : doctors) {
+            userVms.add(new UserVm(d.getUserId(), d.getName(), "DOCTOR", d.getEmail(), d.getPassword(), d.getUser().getUserId()));
         }
 
         List<Others> others = othersService.getAll();
-        for (Others o:others) {
-            userVms.add(new UserVm(o.getUserId(),o.getName(),"OTHERS",o.getEmail(),o.getPassword(), o.getUser().getUserId()));
+        for (Others o : others) {
+            userVms.add(new UserVm(o.getUserId(), o.getName(), "OTHERS", o.getEmail(), o.getPassword(), o.getUser().getUserId()));
         }
 
         List<Patient> patients = patientService.getAll();
-        for (Patient p:patients) {
-            userVms.add(new UserVm(p.getUserId(), p.getName(), "PATIENT", p.getEmail(),p.getPassword(), p.getUser().getUserId()));
+        for (Patient p : patients) {
+            userVms.add(new UserVm(p.getUserId(), p.getName(), "PATIENT", p.getEmail(), p.getPassword(), p.getUser().getUserId()));
         }
 
 
-        for (UserVm u:userVms) {
+        for (UserVm u : userVms) {
             if (u.getEmail() == null || userVm.getEmail() == null) {
                 UserVm errorNoUser = new UserVm();
                 errorNoUser.setName("NO USER FOUND");
                 continue;
             }
-            if (u.getEmail().equals(userVm.getEmail()) && u.getPassword().equals(userVm.getPassword())){
+            if (u.getEmail().equals(userVm.getEmail()) && u.getPassword().equals(userVm.getPassword())) {
                 return u;
             }
         }
@@ -95,34 +103,33 @@ public class UserController {
         return errorNoUser;
 
     }
+
     @GetMapping("/users")
-    public List<UserVm> getAllUsers(){
+    public List<UserVm> getAllUsers() {
         List<UserVm> userVms = new ArrayList<>();
         List<Doctor> doctors = doctorService.getAll();
-        for (Doctor d:doctors) {
-            userVms.add(new UserVm(d.getUserId(),d.getName(),"DOCTOR",d.getEmail(),"HIDDEN", d.getUser().getUserId()));
+        for (Doctor d : doctors) {
+            userVms.add(new UserVm(d.getUserId(), d.getName(), "DOCTOR", d.getEmail(), "HIDDEN", d.getUser().getUserId()));
         }
 
         List<Others> others = othersService.getAll();
-        for (Others o:others) {
-            userVms.add(new UserVm(o.getUserId(),o.getName(),"OTHERS",o.getEmail(),"HIDDEN", o.getUser().getUserId()));
+        for (Others o : others) {
+            userVms.add(new UserVm(o.getUserId(), o.getName(), "OTHERS", o.getEmail(), "HIDDEN", o.getUser().getUserId()));
         }
 
         List<Patient> patients = patientService.getAll();
-        for (Patient p:patients) {
-            userVms.add(new UserVm(p.getUserId(), p.getName(), "PATIENT", p.getEmail(),"HIDDEN", p.getUser().getUserId()));
+        for (Patient p : patients) {
+            userVms.add(new UserVm(p.getUserId(), p.getName(), "PATIENT", p.getEmail(), "HIDDEN", p.getUser().getUserId()));
         }
         System.out.println("userVms = " + userVms);
         return userVms;
     }
 
-    @RequestMapping("/test")
-    public class TestController {
 
-        @GetMapping("/connection")
-        public String testConnection() {
-            return "Connection successful!";
-        }
+    @GetMapping("/connection")
+    public String testConnection() {
+        return "Connection successful!";
     }
+
 
 }
