@@ -115,4 +115,14 @@ public class UserController {
         System.out.println("userVms = " + userVms);
         return userVms;
     }
+
+    @RequestMapping("/test")
+    public class TestController {
+
+        @GetMapping("/connection")
+        public String testConnection() {
+            return "Connection successful!";
+        }
+    }
+
 }
